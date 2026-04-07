@@ -1,9 +1,8 @@
 package utils;
 
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-
+import org.openqa.selenium.remote.RemoteWebDriver;
 import java.net.URL;
 
 public class DriverFactory {
@@ -12,15 +11,21 @@ public class DriverFactory {
 
     public static WebDriver initDriver() {
         try {
+           
+            String hubURL = "http://172.31.8.201:4444";
+
             ChromeOptions options = new ChromeOptions();
-            driver.set(new RemoteWebDriver(
-                    new URL("http://localhost:4444"),
-                    options
-            ));
+            options.addArguments("--start-maximized");
+
+            System.out.println("Connecting to Grid at: " + hubURL);
+
+            driver.set(new RemoteWebDriver(new URL(hubURL), options));
+
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException("Could not create WebDriver session. Check Grid URL.");
         }
-        return getDriver();
+        return driver.get();
     }
 
     public static WebDriver getDriver() {
@@ -28,7 +33,9 @@ public class DriverFactory {
     }
 
     public static void quitDriver() {
-        getDriver().quit();
-        driver.remove();
+        if (driver.get() != null) {
+            driver.get().quit();
+            driver.remove();
+        }
     }
 }
