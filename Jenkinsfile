@@ -8,6 +8,9 @@ pipeline {
             }
         }
 
+        tools {
+            maven 'Maven_Latest'
+        }
         stage('Build') {
             steps {
                 bat 'mvn clean compile'
