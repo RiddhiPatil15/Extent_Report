@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'Main', url: https://github.com/RiddhiPatil15/Extent_Report.git'
+                git branch: 'Main', url: 'https://github.com/RiddhiPatil15/Extent_Report.git'
             }
         }
 
