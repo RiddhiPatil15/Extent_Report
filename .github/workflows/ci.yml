@@ -10,26 +10,41 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # 1. Checkout code
     - name: Checkout Code
       uses: actions/checkout@v4
 
+    # 2. Setup Java
     - name: Setup Java
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Build Project
-      run: mvn clean install -DskipTests
+    # 3. Cache Maven dependencies (faster builds)
+    - name: Cache Maven packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-m2
 
-    - name: Run BDD Tests
-      run: mvn test
+    # 4. Build + Run Tests (BDD execution)
+    - name: Build and Run Tests
+      run: mvn clean test
 
-    - name: Archive Extent Report
+    # 5. Debug (optional but useful)
+    - name: List target folder
+      if: always()
+      run: ls -R target
+
+    # 6. Upload Extent + Cucumber Reports
+    - name: Upload Test Reports
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: extent-report
+        name: test-reports
         path: |
-          target/extent-reports/
+          target/extentreports/
           target/cucumber-reports/
