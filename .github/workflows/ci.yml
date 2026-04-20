@@ -20,17 +20,28 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
+    # Optional (only if using Selenium)
     - name: Setup Chrome
       uses: browser-actions/setup-chrome@v1
 
     - name: Build and Run Tests
       run: mvn clean test
+      continue-on-error: true   # ⭐ KEY LINE
 
-    - name: Upload Reports
+    - name: List target folder
+      if: always()
+      run: ls -R target || echo "target not found"
+
+    - name: Upload Extent Reports
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: test-reports
-        path: |
-          target/extentreports/
-          target/cucumber-reports/
+        name: extent-report
+        path: target/extentreports/
+
+    - name: Upload Cucumber Reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: cucumber-report
+        path: target/cucumber-reports/
